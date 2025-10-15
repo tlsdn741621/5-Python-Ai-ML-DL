@@ -7,10 +7,19 @@ https://github.com/lsy3709/React-Spring-Con-Work-boot-Backend.git
 3 자료3
 리액트 프론트 엔드 깃 주소
 https://github.com/lsy3709/React-Spring-Con-Work-boot-Frontend-.git
+3-2 자료4
+플라스크 서버 깃 주소
+https://github.com/lsy3709/AI-ML-Rest-Server-Sample-Flask-
+3-3 자료5
+샘플 모델 위치.
+망치, 니퍼
+https://www.band.us/band/98498013/attachment/folder/1495148
 
 4 모델 탑재한, 레스트 (플라스크서버)
 현재 프로젝트 폴더 -> 3-Resnet -> 플라스크 서버 샘플 작업.txt
 파일 참고,
+flask 서버 실행 명령어
+python app.py
 
 5 스프링 부트 연동된 , 마리아 디비, 몽고디비 머신 시작
 도커 데스크탑에서,
@@ -52,5 +61,66 @@ yarn install
 2) 리액트에서
 로그인 후 -> AiTest -> 공구 툴 화면 -> 이미지 업로드 후 확인시, 정상 출력 .
 
+-------------------------------------------------------------
+
+삼성 주가 모델 이용, 레스트 버전
+1. 주가 정보 요청
+포스트맨에서, -> 스프링으로 요청시 주의사항,
+get 방식
+URL : http://localhost:8080/api/ai2/stock-data?period=5d
+1) 토큰을 탑재
+예시 토큰
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtaWQiOiJsc3kxMDE0IiwiaWF0IjoxNzYwNDkxNTc3LCJleHAiOjE3NjA1Nzc5Nzd9.JZ64urPyrgwzNOGW6eqNnzapviHaP4kFnau7BdD75pE
+Authorization 탭 -> Auth Type : Bearer Token -> 오른쪽에 토큰값 붙여넣기
+
+2) 전달하는 형식
+Params 탭 -> 키: period -> 값 : 5d
+send
+
+
+2. 주가 예측 요청
+post 방식
+URL : http://localhost:8080/api/ai2/predict/rnn
+1) 토큰을 탑재
+예시 토큰
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtaWQiOiJsc3kxMDE0IiwiaWF0IjoxNzYwNDkxNTc3LCJleHAiOjE3NjA1Nzc5Nzd9.JZ64urPyrgwzNOGW6eqNnzapviHaP4kFnau7BdD75pE
+Authorization 탭 -> Auth Type : Bearer Token -> 오른쪽에 토큰값 붙여넣기
+
+2) 전달하는 형식
+Body 탭 -> raw 탭 -> Text -> JSON 변경
+내용에.
+json 복사
+{
+"model":"RNN",
+"data":[[83300,83200,85000,84200],[84600,83400,84900,83900],[84900,84700,86200,86000],[89300,88700,90300,89750]],
+"period":"5d"
+}
+
+-----------------------------------------
+리액트 버전에서,
+1) 주가 정보 데이터 요청 구조
+로그인 후 -> 홈의 헤더 화면 Ai Test -> 사이드 메뉴 2번 , 삼성 주가 예측
+
+삼성 주가 예측에서, -> 5d 기간 선택 후, 데이터 가져오기 클릭 할 때 동작 구조,
+
+순서
+1)fetchStockData 함수 호출
+2) ->  dispatch(fetchStockDataRequest(selectedPeriod)); 함수 호출
+3) fetchStockDataRequest (aiSlice 파일로 이동)
+4) -> aiSaga 파일로 연결
+5) ->  yield takeLatest(fetchStockDataRequest.type, fetchStockDataSaga);
+6) -> fetchStockDataSaga 함수 호출
+fetchStockDataSaga 함수의 내용
+-> // ✅ 주가 데이터 가져오기 요청
+function* fetchStockDataSaga(action) {
+    try {
+        const response = yield call(
+            axiosInstance.get,
+            `/ai2/stock-data?period=${action.payload}`, // ✅ Base URL 적용됨
+        );
+        ....
+
+포스트맨에서 호출 했던 주소 처럼
+http://localhost:8080/api/ai2/stock-data?period=5d
 
 
